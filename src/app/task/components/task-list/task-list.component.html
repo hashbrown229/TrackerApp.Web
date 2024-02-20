@@ -1,0 +1,236 @@
+<p>
+  category-list.page works!
+</p>
+<div class="Container">
+
+  <div id="pendingTodoDiv">
+
+    <div id="tableLoadingSpinner"
+      class="loading-shade"
+      *ngIf="isLoadingResults">
+      <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+    </div>
+
+    <div id="tableTopBar" class="mat-header-row">
+      <div class="col-sm">
+        <mat-form-field appearance="outline">
+          <mat-label>Search Task</mat-label>
+          <input
+            type="text"
+            matInput
+            (keyup)="searchClick($event)"
+            placeholder="Ex. Shopping"
+            #searchTodo
+          />
+        </mat-form-field>
+      </div>
+
+      <!-- <mat-paginator
+      [length]="resultsLength"
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      aria-label="Select page">
+      </mat-paginator> -->
+
+      <!-- <mat-slide-toggle [(ngModel)]="checked" (change)="changed()"
+        >Show completed</mat-slide-toggle> -->
+
+
+
+    </div>
+
+    <div class="pendingTodoTableDiv">
+      <table
+        mat-table
+        [dataSource]="(todoPending$ | async) || []"
+        class="mat-elevation-z8 styled-table"
+      >
+        <ng-container matColumnDef="id">
+          <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
+            <span>
+              <mat-icon class="material-symbols-outlined"
+                >check_circle</mat-icon
+              >
+            </span>
+          </th>
+          <td mat-cell *matCellDef="let task">
+            <mat-checkbox
+              (change)="markAsDone(task.id)"
+              matTooltip="Mark as Compelte!"
+            ></mat-checkbox>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
+            {{ "Name" | uppercase }}
+          </th>
+          <td mat-cell *matCellDef="let task">{{ task.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="due_date">
+          <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
+            {{ "Due Date" | uppercase }}
+          </th>
+          <td mat-cell *matCellDef="let task" class="w3-deep-orange">
+            {{ task.due_date | date }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="priority">
+          <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
+            {{ "Priority" | uppercase }}
+          </th>
+          <td mat-cell *matCellDef="let task" [ngSwitch]="task.priority">
+            <mat-icon
+              *ngSwitchCase="'Low'"
+              class="lowP"
+              matTooltip="Low Priority"
+              >offline_pin</mat-icon
+            >
+            <mat-icon
+              *ngSwitchCase="'Medium'"
+              class="medP"
+              matTooltip="Medium Priority"
+              >offline_pin</mat-icon
+            >
+            <mat-icon
+              *ngSwitchCase="'High'"
+              class="highP"
+              matTooltip="High Priority"
+              >offline_pin</mat-icon
+            >
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="detais">
+          <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
+            {{ "Manage" | uppercase }}
+          </th>
+          <td mat-cell *matCellDef="let task">
+            <span>
+              <mat-icon
+                class="material-symbols-outlined editAction"
+                (click)="updateTaskDialog(task)"
+                matTooltip="Update Task"
+                >edit_note</mat-icon
+              >
+            </span>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <span>
+              <mat-icon
+                class="material-symbols-outlined deleteAction"
+                (click)="deleteTask(task.id)"
+                matTooltip="Delete Task"
+                >delete_forever</mat-icon
+              >
+            </span>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedPendingColumns"
+          ngClass="even"
+        ></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedPendingColumns"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="4">No data matching the filter "{{searchTodo.value}}"</td>
+        </tr>
+      </table>
+
+
+
+    </div>
+
+    <mat-paginator
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        [pageSize]="10 || paginationParameters.take"
+        [length]="resultsLength"
+        (page)="
+          paginationParameters$.next({
+            take: $event.pageSize,
+            skip: $event.pageIndex * $event.pageSize,
+            search: this.paginationParameters.search,
+            status: this.paginationParameters.status
+          })
+        "
+        aria-label="Show items">
+      </mat-paginator>
+
+  </div>
+
+  <div class="completedTodoTableDiv">
+    <table
+      mat-table
+      [dataSource]="(todoCompleted$ | async) || []"
+      class="mat-elevation-z8 styled-table"
+    >
+      <ng-container matColumnDef="name">
+        <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
+          {{ "Name" | uppercase }}
+        </th>
+        <td mat-cell *matCellDef="let task">{{ task.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="priority">
+        <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
+          {{ "Priority" | uppercase }}
+        </th>
+        <td mat-cell *matCellDef="let task" [ngSwitch]="task.priority">
+          <mat-icon *ngSwitchCase="'Low'" class="lowP" matTooltip="Low Priority"
+            >offline_pin</mat-icon
+          >
+          <mat-icon
+            *ngSwitchCase="'Medium'"
+            class="medP"
+            matTooltip="Medium Priority"
+            >offline_pin</mat-icon
+          >
+          <mat-icon
+            *ngSwitchCase="'High'"
+            class="highP"
+            matTooltip="High Priority"
+            >offline_pin</mat-icon
+          >
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="due_date">
+        <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
+          {{ "Completion Date" | uppercase }}
+        </th>
+        <td mat-cell *matCellDef="let task" class="w3-deep-orange">
+          {{ task.updated_date | date }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="detais">
+        <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
+          {{ "Details" | uppercase }}
+        </th>
+        <td mat-cell *matCellDef="let task">
+          <span>
+            <mat-icon
+              class="material-symbols-outlined editAction"
+              (click)="updateTaskDialog(task)"
+              matTooltip="View Task Details"
+              >info</mat-icon
+            >
+          </span>
+          <!-- &nbsp;&nbsp;&nbsp;&nbsp;
+          <span>
+            <mat-icon class="material-symbols-outlined deleteAction" (click)="deleteTask(task.id)" matTooltip="Delete Task">delete_forever</mat-icon>
+        </span> -->
+        </td>
+      </ng-container>
+
+      <tr
+        mat-header-row
+        *matHeaderRowDef="displayedCompletedColumns"
+        ngClass="even"
+      ></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedCompletedColumns"></tr>
+    </table>
+  </div>
+</div>
