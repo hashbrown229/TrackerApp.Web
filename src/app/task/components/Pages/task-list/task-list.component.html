@@ -1,7 +1,7 @@
 <div class="Container">
-  <div id="tableTopBar" class="mat-header-row">
-    <div class="col-sm">
-      <mat-form-field appearance="outline">
+  <div id="tableTopBar" class="table-header-group">
+    <form>
+      <mat-form-field appearance="fill">
         <mat-label>Search Task</mat-label>
         <input
           type="text"
@@ -11,8 +11,7 @@
           #searchTask
         />
       </mat-form-field>
-    </div>
-
+    </form>
     <!-- <mat-paginator
         [length]="resultsLength"
         [pageSize]="10"
@@ -29,13 +28,13 @@
       <mat-spinner></mat-spinner>
     </div>
 
-    <mat-slide-toggle [(ngModel)]="checked" (change)="changed()"
-      >Show All</mat-slide-toggle
-    >
+    <mat-slide-toggle [(ngModel)]="checked" (change)="changed()">{{
+      checked ? "Pending Only" : "Show All"
+    }}</mat-slide-toggle>
   </div>
 
   <div id="pendingTaskDiv" class="py-6 px-12 mb-16">
-    <div id="pendingTaskTableDiv" class="mb-4">
+    <div id="pendingTaskTableDiv" class="mb-6">
       <table
         mat-table
         [dataSource]="(taskPending$ | async) || []"
@@ -60,7 +59,7 @@
 
         <ng-container matColumnDef="name">
           <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
-            {{ "Name" | uppercase }}
+            {{ "Name" }}
           </th>
           <td mat-cell *matCellDef="let task" [matTooltip]="task.description">
             {{ task.name | titlecase }}
@@ -69,7 +68,7 @@
 
         <ng-container matColumnDef="category">
           <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
-            {{ "Category" | uppercase }}
+            {{ "Category" }}
           </th>
           <td mat-cell *matCellDef="let task">
             {{ task.category | categoryToString }}
@@ -78,26 +77,36 @@
 
         <ng-container matColumnDef="created">
           <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
-            {{ "Created" | uppercase }}
+            {{ "Created" }}
           </th>
-          <td mat-cell *matCellDef="let task" class="w3-deep-orange">
-            {{ task.createdDate | date }}
+          <td
+            mat-cell
+            *matCellDef="let task"
+            class="w3-deep-orange"
+            [matTooltip]="(task.createdDate | date) || 'Not Set'"
+          >
+            {{ task.createdDate | calculateDays }}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="due_date">
           <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
-            {{ "Due Date" | uppercase }}
+            {{ "Due Date" }}
           </th>
-          <td mat-cell *matCellDef="let task" class="w3-deep-orange">
+          <td
+            mat-cell
+            *matCellDef="let task"
+            class="w3-deep-orange"
+            [matTooltip]="(task.dueDate | date) || 'Not Set'"
+          >
             <span *ngIf="task.dueDate == null">Not Set</span
-            >{{ task.dueDate | date }}
+            >{{ task.dueDate | calculateDays }}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="priority">
           <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
-            {{ "Priority" | uppercase }}
+            {{ "Priority" }}
           </th>
           <td
             mat-cell
@@ -105,23 +114,23 @@
             [ngSwitch]="task.priority | priorityToString"
           >
             <mat-icon *ngSwitchCase="'Low'" class="lowP" matTooltip="Low"
-              >fast_forward</mat-icon
+              >crisis_alert</mat-icon
             >
             <mat-icon *ngSwitchCase="'Medium'" class="medP" matTooltip="Medium"
-              >fast_forward</mat-icon
+              >crisis_alert</mat-icon
             >
             <mat-icon *ngSwitchCase="'High'" class="highP" matTooltip="High">
-              fast_forward
+              crisis_alert
             </mat-icon>
             <!-- <mat-icon *ngSwitchDefault class="highP" matTooltip="High"
-              >fast_forward</mat-icon
+              >crisis_alert</mat-icon
             > -->
           </td>
         </ng-container>
 
         <ng-container matColumnDef="details">
           <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
-            {{ "Manage" | uppercase }}
+            {{ "Manage" }}
           </th>
           <td mat-cell *matCellDef="let task">
             <!-- <mat-checkbox
@@ -134,7 +143,15 @@
                 class="material-symbols-outlined markDone"
                 (click)="updateTaskStatus(task.id, 1)"
                 matTooltip="Mark as Completed!"
-                >download_done</mat-icon
+                >done_outline</mat-icon
+              >
+            </span>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="align-middle">
+              <mat-icon
+                class="material-symbols-outlined duplicateTask"
+                matTooltip="Create Duplicate!"
+                >content_copy</mat-icon
               >
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -142,7 +159,7 @@
               <mat-icon
                 class="material-symbols-outlined editAction"
                 (click)="updateTaskDialog(task)"
-                matTooltip="Update Task"
+                matTooltip="Update Task!"
                 >draw</mat-icon
               >
             </span>
@@ -151,16 +168,8 @@
               <mat-icon
                 class="material-symbols-outlined deleteAction"
                 (click)="deleteTask(task.id)"
-                matTooltip="Delete Task"
+                matTooltip="Delete Task!"
                 >delete_forever</mat-icon
-              >
-            </span>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <span class="align-middle">
-              <mat-icon
-                class="material-symbols-outlined duplicateTask"
-                matTooltip="Duplicate Task!"
-                >content_copy</mat-icon
               >
             </span>
           </td>
@@ -198,7 +207,7 @@
   </div>
 
   <div id="completedTaskDiv" class="py-6 px-12">
-    <div id="completedTaskTableDiv" class="mb-4">
+    <div id="completedTaskTableDiv" class="mb-6">
       <table
         mat-table
         [dataSource]="(taskCompleted$ | async) || []"
@@ -221,14 +230,16 @@
 
         <ng-container matColumnDef="name">
           <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
-            {{ "Name" | uppercase }}
+            {{ "Name" }}
           </th>
-          <td mat-cell *matCellDef="let task">{{ task.name }}</td>
+          <td mat-cell *matCellDef="let task" [matTooltip]="task.description">
+            {{ task.name }}
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="category">
           <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
-            {{ "Category" | uppercase }}
+            {{ "Category" }}
           </th>
           <td mat-cell *matCellDef="let task">
             {{ task.category | categoryToString }}
@@ -237,26 +248,35 @@
 
         <ng-container matColumnDef="created">
           <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
-            {{ "Created" | uppercase }}
+            {{ "Created" }}
           </th>
-          <td mat-cell *matCellDef="let task" class="w3-deep-orange">
-            {{ task.createdDate | date }}
+          <td
+            mat-cell
+            *matCellDef="let task"
+            class="w3-deep-orange"
+            [matTooltip]="(task.createdDate | date) || 'Not Set'"
+          >
+            {{ task.createdDate | calculateDays }}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="completed_date">
           <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
-            {{ "Completed" | uppercase }}
+            {{ "Completed" }}
           </th>
-          <td mat-cell *matCellDef="let task" class="w3-deep-orange">
-            <span *ngIf="task.completionDate == null">Not Set</span
-            >{{ task.completionDate | date }}
+          <td
+            mat-cell
+            *matCellDef="let task"
+            class="w3-deep-orange"
+            [matTooltip]="(task.completionDate | date) || 'Not Set'"
+          >
+            {{ task.completionDate | calculateDays }}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="priority">
           <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
-            {{ "Priority" | uppercase }}
+            {{ "Priority" }}
           </th>
           <td
             mat-cell
@@ -264,23 +284,23 @@
             [ngSwitch]="task.priority | priorityToString"
           >
             <mat-icon *ngSwitchCase="'Low'" class="lowP" matTooltip="Low"
-              >fast_forward</mat-icon
+              >crisis_alert</mat-icon
             >
             <mat-icon *ngSwitchCase="'Medium'" class="medP" matTooltip="Medium"
-              >fast_forward</mat-icon
+              >crisis_alert</mat-icon
             >
             <mat-icon *ngSwitchCase="'High'" class="highP" matTooltip="High"
-              >fast_forward</mat-icon
+              >crisis_alert</mat-icon
             >
-            <mat-icon *ngSwitchDefault class="highP" matTooltip="High"
-              >fast_forward</mat-icon
+            <mat-icon *ngSwitchDefault class="medP" matTooltip="High"
+              >crisis_alert</mat-icon
             >
           </td>
         </ng-container>
 
         <ng-container matColumnDef="details">
           <th mat-header-cell class="custom-mat-header-cell" *matHeaderCellDef>
-            {{ "Manage" | uppercase }}
+            {{ "Manage" }}
           </th>
 
           <td mat-cell *matCellDef="let task">
@@ -303,7 +323,7 @@
             <span class="align-middle">
               <mat-icon
                 class="material-symbols-outlined duplicateTask"
-                matTooltip="Duplicate Task!"
+                matTooltip="Create Duplicate!"
                 >content_copy</mat-icon
               >
             </span>
@@ -338,7 +358,7 @@
         ></tr>
         <tr class="mat-row" *matNoDataRow>
           <td class="mat-cell" colspan="4">
-            No task has been completed yet! "{{ searchTask.value }}"
+            No task has been completed yet! {{ searchTask.value }}
           </td>
         </tr>
       </table>

@@ -22,15 +22,20 @@ table {
 }
 
 .custom-mat-header-cell {
-  color: rgb(204 6 6 / 54%);
+  color: lightslategrey;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 td,
 th {
   text-align: center !important;
   vertical-align: middle !important;
+  border-bottom: 1px solid #ccc;
+}
+th {
+  text-transform: uppercase;
+  padding: 15px;
 }
 
 tr:hover {
@@ -42,8 +47,6 @@ tr:hover {
 }
 
 .medP {
-  /* color: #b3a639; */
-  /* color: lightskyblue; */
   color: goldenrod;
 }
 
@@ -60,7 +63,7 @@ tr:hover {
 }
 
 .duplicateTask {
-  color: teal;
+  color: goldenrod;
 }
 
 .editAction {
