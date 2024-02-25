@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import {
+  CalculateDaysPipe,
   CategoryToStringPipe,
   PriorityToStringPipe,
   TaskDetailComponent,
@@ -32,6 +33,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TaskService } from './services';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
   imports: [
@@ -61,12 +63,14 @@ import { TaskService } from './services';
     MatTooltipModule,
     MatProgressSpinnerModule,
     TitleCasePipe,
+    MatSlideToggleModule,
   ],
   declarations: [
     TaskListComponent,
     TaskDetailComponent,
     CategoryToStringPipe,
     PriorityToStringPipe,
+    CalculateDaysPipe,
   ],
   exports: [TaskListComponent, TaskDetailComponent],
   providers: [TaskService],
