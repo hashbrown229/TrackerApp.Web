@@ -2,17 +2,17 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { BehaviorSubject, from, map, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, Observable, from, map, switchMap, tap } from 'rxjs';
 import { PaginationDTO, STATUS, TaskDTO } from '../../../models';
 import { TaskService } from '../../../services';
-import { GUID } from '../../../models/Utils';
+import { CATEGORY, GUID } from '../../../models/Utils';
 
 @Component({
   selector: 'task-list-page',
   templateUrl: './task-list.component.html',
   styleUrls: ['./task-list.component.scss'],
 })
-export class TaskListComponent implements AfterViewInit {
+export class TaskListComponent implements OnInit, AfterViewInit {
   displayedPendingColumns: string[] = [
     'name',
     'priority',
@@ -34,10 +34,11 @@ export class TaskListComponent implements AfterViewInit {
   dataSource!: MatTableDataSource<TaskDTO[]>;
   refresh$ = new BehaviorSubject(null);
   resultsLength = 0;
-  isPendingLoading = true;
-  isCompletedLoading = true;
+  isLoadingResult = true;
   kpi$: BehaviorSubject<number>[] = [];
   checked: boolean = false;
+
+  // taskPending$: Observable<TaskDTO[]>;
 
   paginationParameters$ = new BehaviorSubject<PaginationDTO>(
     new PaginationDTO()
@@ -46,7 +47,26 @@ export class TaskListComponent implements AfterViewInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(readonly taskServices: TaskService, public dialog: MatDialog) {}
+  CATEGORY!: CATEGORY;
+
+  constructor(readonly taskServices: TaskService, public dialog: MatDialog) {
+    // this.taskPending$ = new Observable<TaskDTO[]>();
+    // this.taskPending$.subscribe((x) => {
+    //   x.pipe(
+    //     map((a) => {
+    //       return a;
+    //     }),
+    //     tap((b) => {
+    //       b.forEach((y) => {
+    //         console.log('printing subscriber - ', y);
+    //       });
+    //     })
+    //   );
+    // });
+  }
+  ngOnInit(): void {
+    throw new Error('Method not implemented.');
+  }
 
   ngAfterViewInit() {
     // this.dataSource.paginator = this.paginator;
@@ -68,29 +88,31 @@ export class TaskListComponent implements AfterViewInit {
 
   taskPending$ = this.refresh$.pipe(
     switchMap(async () => {
-      this.isPendingLoading = true;
+      this.isLoadingResult = true;
       const pendingTask = await this.taskServices.getPendingTasks(
         STATUS.Pending
       );
-      // setTimeout(() => {
-      //   console.log('interval');
-      // }, 500000);
-      this.isPendingLoading = false;
-      return from(pendingTask);
+      setTimeout(() => {
+        this.isLoadingResult = false;
+      }, 500);
+      return pendingTask;
+    }),
+    switchMap((tasksObservable: Observable<TaskDTO[]>) => {
+      // Inside this switchMap, you'll have the TaskDTO[]
+      return tasksObservable;
+    }),
+    tap((x) => {
+      x.forEach((y) => {
+        console.log('printing task - ', y.name);
+      });
     })
-    // map((tasksObservable: TaskDTO[]) => tasksObservable),
-    // tap((x) => {
-    //   x.forEach((y) => {
-    //     console.log('printing task - ', y);
-    //   });
-    // })
   );
 
   taskCompleted$ = this.refresh$.pipe(
     switchMap(() => {
-      this.isCompletedLoading = true;
+      // this.isLoadingResult = true;
       let completedTask = this.taskServices.getCompletedTasks(STATUS.Completed);
-      this.isCompletedLoading = false;
+      // this.isLoadingResult = false;
       return completedTask;
     }),
     tap((x) => {
@@ -123,9 +145,9 @@ export class TaskListComponent implements AfterViewInit {
   }
 
   async updateTaskStatus(id: GUID, status: STATUS) {
-    this.isCompletedLoading = this.isPendingLoading = true;
+    this.isLoadingResult = true;
     await this.taskServices.updateTaskStatus(id, { status });
-    this.isCompletedLoading = this.isPendingLoading = false;
+    this.isLoadingResult = false;
     this.refresh$.next(null);
   }
 
