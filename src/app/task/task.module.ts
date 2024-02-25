@@ -1,6 +1,11 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { TaskDetailComponent, TaskListComponent } from './components';
+import { CommonModule, TitleCasePipe } from '@angular/common';
+import {
+  CategoryToStringPipe,
+  PriorityToStringPipe,
+  TaskDetailComponent,
+  TaskListComponent,
+} from './components';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -55,8 +60,14 @@ import { TaskService } from './services';
     MatDividerModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
+    TitleCasePipe,
   ],
-  declarations: [TaskListComponent, TaskDetailComponent],
+  declarations: [
+    TaskListComponent,
+    TaskDetailComponent,
+    CategoryToStringPipe,
+    PriorityToStringPipe,
+  ],
   exports: [TaskListComponent, TaskDetailComponent],
   providers: [TaskService],
 })
