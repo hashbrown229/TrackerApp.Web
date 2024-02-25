@@ -6,7 +6,7 @@ export class CreateTaskDTO {
   status: STATUS;
   priority: PRIORITY;
   category: CATEGORY;
-  due_date: Date | null;
+  dueDate: Date | null;
   is_subtask: boolean;
   parent_id: GUID | null;
 
@@ -14,7 +14,7 @@ export class CreateTaskDTO {
     this.status = STATUS.Pending;
     this.priority = PRIORITY.Low;
     this.category = CATEGORY.General;
-    this.due_date = null;
+    this.dueDate = null;
     this.is_subtask = false;
     this.parent_id = null;
   }

@@ -7,10 +7,10 @@ export class TaskDTO {
   status!: STATUS;
   priority!: PRIORITY;
   category!: CATEGORY;
-  created_date!: Date;
-  updated_date!: Date;
-  due_date?: Date | null;
-  completion_date?: Date | null;
+  createdDate!: Date;
+  updatedDate!: Date;
+  dueDate?: Date | null;
+  completionDate?: Date | null;
   is_subtask?: boolean;
   parent_id?: GUID | null;
 }

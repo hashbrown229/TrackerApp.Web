@@ -5,5 +5,5 @@ export class UpdateTaskDTO {
   description?: string | undefined;
   priority!: PRIORITY;
   category!: CATEGORY;
-  due_date?: Date | null;
+  dueDate?: Date | null;
 }
