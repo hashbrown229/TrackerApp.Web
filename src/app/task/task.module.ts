@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TaskListComponent } from './components';
+import { TaskDetailComponent, TaskListComponent } from './components';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -26,6 +26,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { TaskService } from './services';
 
 @NgModule({
   imports: [
@@ -55,6 +56,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatTooltipModule,
     MatProgressSpinnerModule,
   ],
-  declarations: [TaskListComponent],
+  declarations: [TaskListComponent, TaskDetailComponent],
+  exports: [TaskListComponent, TaskDetailComponent],
+  providers: [TaskService],
 })
 export class TaskModule {}
