@@ -1,1 +1,2 @@
-export * from "./task-list";
+export * from './Pages';
+export * from './Dialogs';
