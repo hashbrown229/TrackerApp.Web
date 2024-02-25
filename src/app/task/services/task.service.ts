@@ -8,6 +8,8 @@ import {
   UpdateTaskDTO,
 } from '../models';
 import { Observable, firstValueFrom } from 'rxjs';
+import { GUID } from '../models/Utils';
+import { UpdateTaskStatusDTO } from '../models/UpdateTaskStatusDTO';
 
 @Injectable({
   providedIn: 'root',
@@ -15,38 +17,42 @@ import { Observable, firstValueFrom } from 'rxjs';
 export class TaskService {
   constructor(private http: HttpClient) {}
 
-  private BaseURL = 'http://localhost:7149/api/Task';
+  private BaseURL = 'http://localhost:5235/api/Tasks';
 
   public getAllTasks(): Observable<TaskDTO[]> {
-    const Tasks = this.http.get<TaskDTO[]>(this.BaseURL + '/GetAll', {
+    const Tasks = this.http.get<TaskDTO[]>(this.BaseURL + '?status=All', {
       headers: { 'Access-Control-Allow-Origin': '*' },
     });
     return Tasks;
   }
 
-  public getPendingTasks(pending: STATUS): Observable<TaskDTO[]> {
+  public async getPendingTasks(
+    pending: STATUS
+  ): Promise<Observable<TaskDTO[]>> {
     const Tasks = this.http.get<TaskDTO[]>(
-      this.BaseURL + `/getPending/${pending}`,
+      this.BaseURL + `?status=${pending}`,
       {
         headers: { 'Access-Control-Allow-Origin': '*' },
       }
     );
+    console.log(Tasks);
     return Tasks;
   }
 
   public getCompletedTasks(completed: STATUS): Observable<TaskDTO[]> {
     const Tasks = this.http.get<TaskDTO[]>(
-      this.BaseURL + `/getCompleted/${completed}`,
+      this.BaseURL + `?status=${completed}`,
       {
         headers: { 'Access-Control-Allow-Origin': '*' },
       }
     );
 
+    console.log(Tasks);
     return Tasks;
   }
 
-  public getTaskByID(id: number): Observable<TaskDTO> {
-    const Task = this.http.get<TaskDTO>(this.BaseURL + `/GetOne/${id}`, {
+  public getTaskByID(id: GUID): Observable<TaskDTO> {
+    const Task = this.http.get<TaskDTO>(this.BaseURL + `/${id}`, {
       headers: { 'Access-Control-Allow-Origin': '*' },
     });
     return Task;
@@ -55,56 +61,33 @@ export class TaskService {
   public async createTask(
     payload: CreateTaskDTO
   ): Promise<Observable<TaskDTO>> {
-    const Task = this.http.post<TaskDTO>(this.BaseURL + `/Create`, payload);
+    const Task = this.http.post<TaskDTO>(this.BaseURL, payload);
     Task.subscribe();
     return Task;
   }
 
-  async updateTask(id: number, payload: UpdateTaskDTO): Promise<void> {
-    // if (payload.status != "Completed") {
-    //   payload.updated_date = new Date(0);
-    // }
-    const Task = this.http.put<TaskDTO>(
-      this.BaseURL + `/updateTask/${id}`,
-      payload
-    );
-    await firstValueFrom(Task);
+  public async updateTask(id: GUID, payload: UpdateTaskDTO): Promise<TaskDTO> {
+    const Task = this.http.put<TaskDTO>(this.BaseURL + `/${id}`, payload);
+    return await firstValueFrom(Task);
   }
 
-  async markAsDone(id: number, payload: STATUS) {
+  async updateTaskStatus(id: GUID, payload: UpdateTaskStatusDTO) {
     return await firstValueFrom(
-      this.http.put(this.BaseURL + `/markAsDone/${id}`, payload)
+      this.http.put(this.BaseURL + `/${id}`, payload)
     );
   }
 
-  async deleteTask(id: number) {
-    return await firstValueFrom(
-      this.http.delete(this.BaseURL + `/removeTask/${id}`)
-    );
+  async deleteTask(id: GUID) {
+    return await firstValueFrom(this.http.delete(this.BaseURL + `/${id}`));
   }
 
   async fullTextSearchPending(
     queryParams: PaginationDTO
   ): Promise<[TaskDTO[], number]> {
+    console.log('Service - Text search - {0}', queryParams);
     const Tasks = await firstValueFrom(
-      this.http.post<[TaskDTO[], number]>(
-        this.BaseURL + `/searchPending`,
-        queryParams
-      )
+      this.http.post<[TaskDTO[], number]>(this.BaseURL, queryParams)
     );
-    return Tasks;
-  }
-
-  public getPendingTasks1(pending: STATUS): Observable<TaskDTO[]> {
-    const Tasks = this.http.get<TaskDTO[]>(
-      this.BaseURL + `/getPending/${pending}`,
-      {
-        headers: { 'Access-Control-Allow-Origin': '*' },
-      }
-    );
-    // }).pipe(map((res: any) => <TaskDTO[]><unknown>res.Json()));
-    // console.log("Printing TaskDTO from get Pending service");
-    // console.log(Tasks);
     return Tasks;
   }
 }

@@ -1,7 +1,7 @@
 import { PRIORITY, STATUS, CATEGORY, GUID } from './Utils';
 
 export class TaskDTO {
-  id!: GUID;
+  id!: any | GUID;
   name!: string;
   description?: string | undefined;
   status!: STATUS;

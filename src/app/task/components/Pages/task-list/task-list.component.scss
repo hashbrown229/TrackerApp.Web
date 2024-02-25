@@ -1,0 +1,106 @@
+.completedTodoTableDiv,
+.pendingTodoTableDiv {
+    margin: 4em;
+}
+
+table {
+    width: 100%;
+    color: black;
+}
+
+.styled-table {
+    border-collapse: collapse;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px black;
+}
+
+.material-symbols {
+    font-variation-settings:
+        'FILL' 1,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 48
+}
+
+.custom-mat-header-cell {
+    color: rgb(204 6 6 / 54%);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+td,
+th {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+tr:hover {
+    background-color: rgb(226, 219, 219);
+}
+
+.lowP {
+    color: rgb(119, 207, 119);
+}
+
+.medP {
+    color: #eade72;
+}
+
+.highP {
+    color: red;
+}
+
+.editAction {
+    color: #1377c4;
+}
+
+.deleteAction {
+    color: red;
+}
+
+// mat-checkbox-frame { 
+//     border-color: green;
+// } 
+
+.loading-shade {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 56px;
+    right: 0;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+//Table Top bar in one line - Search & Paginator 
+.one-line {
+    overflow: hidden;
+    width: 300px;
+    white-space: nowrap;
+    font-size: 0px;
+}
+
+.one-line>div {
+    display: inline-block;
+    font-size: 12pt;
+}
+
+.one-line>div:first-child {
+    background-color: yellow;
+}
+
+.one-line>div:last-child {
+    background-color: green;
+    width: 100%;
+}
+
+div#tableTopBar {
+    display: flex;
+    justify-content: space-between;
+    padding: 4rem 2rem 0 2rem;
+}
