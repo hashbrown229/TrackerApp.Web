@@ -8,6 +8,6 @@ export class PaginationDTO {
 
   constructor() {
     this.search = '';
-    (this.take = 3), (this.skip = 0), (this.status = STATUS.PENDING);
+    (this.take = 3), (this.skip = 0), (this.status = STATUS.Pending);
   }
 }

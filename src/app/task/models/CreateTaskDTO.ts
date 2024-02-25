@@ -11,8 +11,8 @@ export class CreateTaskDTO {
   parent_id: GUID | null;
 
   constructor() {
-    this.status = STATUS.PENDING;
-    this.priority = PRIORITY.LOW;
+    this.status = STATUS.Pending;
+    this.priority = PRIORITY.Low;
     this.category = CATEGORY.General;
     this.due_date = null;
     this.is_subtask = false;
