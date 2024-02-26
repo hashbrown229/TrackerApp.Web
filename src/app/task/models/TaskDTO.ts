@@ -11,6 +11,6 @@ export class TaskDTO {
   updatedDate!: Date;
   dueDate?: Date | null;
   completionDate?: Date | null;
-  is_subtask?: boolean;
-  parent_id?: GUID | null;
+  isSubTask?: boolean;
+  parentTaskId?: GUID | null;
 }
