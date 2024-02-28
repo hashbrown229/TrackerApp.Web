@@ -1,6 +1,8 @@
+// import { STATUS } from './Utils';
+
 import { STATUS } from './Utils';
 
-export class PaginationDTO {
+export class PendingPaginationDTO {
   search: string;
   skip?: number;
   take?: number;
@@ -8,6 +10,8 @@ export class PaginationDTO {
 
   constructor() {
     this.search = '';
-    (this.take = 3), (this.skip = 0), (this.status = STATUS.Pending);
+    this.take = 10;
+    this.skip = 0;
+    this.status = STATUS.Pending;
   }
 }
