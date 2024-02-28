@@ -1,0 +1,109 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+mat-icon {
+  vertical-align: middle;
+}
+
+mat-toolbar {
+  padding: 0 2em;
+  display: flex;
+  background-color: #0d3a64;
+  color: white;
+}
+
+.custom-mat-icon {
+  font-weight: 200;
+}
+
+.website-title {
+  margin-left: 1em;
+  font-weight: 500;
+}
+
+/* // .website-logo {
+//   color: yellowgreen;
+//   background: black;
+//   display: inline-block;
+//   width: 45px;
+//   height: 45px;
+//   border-radius: 50%;
+//   text-align:right;
+//   vertical-align: bottom;
+//   font-size: 30px;
+// } */
+
+.customeText {
+  padding-left: 0.5em;
+  font-weight: bold;
+  font-size: medium;
+}
+
+.add-task-custom-title {
+  @extend .customeText;
+  margin-bottom: 0px !important;
+}
+
+// CSS for form component
+
+.mat-form-field {
+  width: 100%;
+  margin-left: 8px;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+form > * {
+  margin: 5px 0;
+}
+
+.mat-radio-button {
+  margin: 0 12px;
+}
+
+// Input Spacing
+.input-bottom-spacing {
+  margin-bottom: 25px !important;
+}
+
+//Radio Button
+.custom-radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+  align-items: flex-start;
+}
+
+.custom-radio-button {
+  margin: 5px;
+}
+
+.container {
+  display: flex; /* or inline-flex */
+  vertical-align: middle !important;
+  margin-bottom: 30px;
+  align-items: center;
+}
+
+.custom-cancle-button {
+  height: 35px !important;
+}
+
+right-corner {
+  text-align: end;
+}
+
+.dialog-action-alignment {
+  align-content: space-between;
+}
+
+.custom-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
