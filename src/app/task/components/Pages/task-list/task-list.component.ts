@@ -2,17 +2,32 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { BehaviorSubject, Observable, from, map, switchMap, tap } from 'rxjs';
-import { PaginationDTO, STATUS, TaskDTO } from '../../../models';
+import {
+  BehaviorSubject,
+  Observable,
+  combineLatest,
+  from,
+  map,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
+import {
+  PendingPaginationDTO,
+  CompletedPaginationDTO,
+  STATUS,
+  SearchResultDTO,
+  TaskDTO,
+} from '../../../models';
 import { TaskService } from '../../../services';
-import { CATEGORY, GUID } from '../../../models/Utils';
+import { GUID } from '../../../models/Utils';
 
 @Component({
   selector: 'task-list-page',
   templateUrl: './task-list.component.html',
   styleUrls: ['./task-list.component.scss'],
 })
-export class TaskListComponent implements OnInit, AfterViewInit {
+export class TaskListComponent {
   displayedPendingColumns: string[] = [
     'name',
     'priority',
@@ -33,103 +48,179 @@ export class TaskListComponent implements OnInit, AfterViewInit {
 
   dataSource!: MatTableDataSource<TaskDTO[]>;
   refresh$ = new BehaviorSubject(null);
-  resultsLength = 0;
+  pendingResultsLength = 0;
+  completedResultsLength = 0;
   isLoadingResult = true;
-  kpi$: BehaviorSubject<number>[] = [];
-  checked: boolean = false;
+  checked: boolean = true;
 
-  // taskPending$: Observable<TaskDTO[]>;
-
-  paginationParameters$ = new BehaviorSubject<PaginationDTO>(
-    new PaginationDTO()
+  pendingPgnParameters$ = new BehaviorSubject<PendingPaginationDTO>(
+    new PendingPaginationDTO()
   );
-  paginationParameters = new PaginationDTO();
+  pendingPgnParameters = new PendingPaginationDTO();
+
+  completedPgnParameters$ = new BehaviorSubject<CompletedPaginationDTO>(
+    new CompletedPaginationDTO()
+  );
+  completedPgnParameters = new CompletedPaginationDTO();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  CATEGORY!: CATEGORY;
+  constructor(readonly taskServices: TaskService, public dialog: MatDialog) {}
 
-  constructor(readonly taskServices: TaskService, public dialog: MatDialog) {
-    // this.taskPending$ = new Observable<TaskDTO[]>();
-    // this.taskPending$.subscribe((x) => {
-    //   x.pipe(
-    //     map((a) => {
-    //       return a;
-    //     }),
-    //     tap((b) => {
-    //       b.forEach((y) => {
-    //         console.log('printing subscriber - ', y);
-    //       });
-    //     })
-    //   );
-    // });
-  }
-  ngOnInit(): void {
-    throw new Error('Method not implemented.');
-  }
+  // TODO: use combine latest in future
+  // tasks$ = this.paginationParameters$.pipe(
+  //   switchMap(async (paginationParameters) => {
+  //     this.paginationParameters = paginationParameters;
+  //     console.log('Service - Text search - {0}', paginationParameters);
 
-  ngAfterViewInit() {
-    // this.dataSource.paginator = this.paginator;
-  }
+  //     const res = await this.taskServices.textBasedSearch(
+  //       paginationParameters
+  //     );
+  //     return res;
+  //   }),
+  //   tap((data) => (this.resultsLength = data[1])),
+  //   map((data) => data[0])
+  // );
 
-  tasks$ = this.paginationParameters$.pipe(
-    switchMap(async (paginationParameters) => {
-      this.paginationParameters = paginationParameters;
-      console.log('Service - Text search - {0}', paginationParameters);
+  // taskPending$: Observable<TaskDTO[]> = new Observable();
+  // taskCompleted$: Observable<TaskDTO[]> = new Observable();
 
-      const res = await this.taskServices.fullTextSearchPending(
-        paginationParameters
-      );
-      return res;
-    }),
-    tap((data) => (this.resultsLength = data[1])),
-    map((data) => data[0])
-  );
+  // taskPending$ = combineLatest([
+  //   this.refresh$,
+  //   this.paginationParameters$,
+  // ]).pipe(
+  //   switchMap(async ([refresh, pgnParameters]) => {
+  //     this.isLoadingResult = true;
+  //     this.paginationParameters = pgnParameters;
+  //     // const pendingTask = await this.taskServices.getPendingTasks(
+  //     //   STATUS.Pending
+  //     // );
+  //     console.log('Pending List - ', pgnParameters.search);
 
-  taskPending$ = this.refresh$.pipe(
-    switchMap(async () => {
+  //     const pendingTask = await this.taskServices.textBasedSearch(
+  //       pgnParameters
+  //     );
+  //     setTimeout(() => {
+  //       this.isLoadingResult = false;
+  //     }, 500);
+  //     return pendingTask;
+  //   }),
+  //   // tap((data) => (this.pendingResultsLength = data[1])),
+  //   switchMap((data) => {
+  //     console.log('Pending List - ', data);
+  //     return data;
+  //   }),
+  //   // tap((searchRes) => {
+  //   //   // Inside this switchMap, you'll have the TaskDTO[]
+  //   //   this.taskPending$ = searchRes.PendingResults;
+  //   //   this.pendingResultsLength = searchRes.PendingRecords;
+  //   //   this.taskCompleted$ = searchRes.CompletedResults;
+  //   //   this.completedResultsLength = searchRes.CompletedRecords;
+
+  //   //   // return searchRes.PendingResults;
+  //   // }),
+  //   map((searchRes) => {
+  //     this.taskPending$ = of(searchRes.PendingResults);
+  //     this.pendingResultsLength = searchRes.PendingRecords;
+  //     this.taskCompleted$ = of(searchRes.CompletedResults);
+  //     this.completedResultsLength = searchRes.CompletedRecords;
+  //     return searchRes.PendingResults;
+  //   })
+  //   // tap((x) => {
+  //   //   x.forEach((y) => {
+  //   //     console.log('printing task - ', y.name);
+  //   //   });
+  //   // })
+  // );
+
+  // taskCompleted$ = combineLatest([
+  //   this.refresh$,
+  //   this.paginationParameters$,
+  // ]).pipe(
+  //   switchMap(async () => {
+  //     // this.isLoadingResult = true;
+  //     let completedTask = await this.taskServices.getCompletedTasks(
+  //       STATUS.Completed
+  //     );
+  //     // this.isLoadingResult = false;
+  //     return completedTask;
+  //   }),
+  //   tap((x) => {
+  //     x.forEach((y) => {
+  //       console.log('printing task - ', y);
+  //     });
+  //   })
+  // );
+
+  taskPending$ = combineLatest([
+    this.refresh$,
+    this.pendingPgnParameters$,
+  ]).pipe(
+    switchMap(async ([refresh, pgnParameters]) => {
       this.isLoadingResult = true;
-      const pendingTask = await this.taskServices.getPendingTasks(
-        STATUS.Pending
-      );
+      this.pendingPgnParameters = pgnParameters;
+      console.log('Pagination params - ', pgnParameters);
+      let searchResult = await this.taskServices.textBasedSearch(pgnParameters);
       setTimeout(() => {
         this.isLoadingResult = false;
       }, 500);
-      return pendingTask;
+      return searchResult;
     }),
-    switchMap((tasksObservable: Observable<TaskDTO[]>) => {
-      // Inside this switchMap, you'll have the TaskDTO[]
-      return tasksObservable;
+    // switchMap((observableToObj) => {
+    //   console.log('observableToObj - ', observableToObj);
+    //   return observableToObj;
+    // }),
+    tap((searchResult) => {
+      this.pendingResultsLength = searchResult.length;
+      console.log('searchResult.TaskCount - ', searchResult.length);
     }),
-    tap((x) => {
-      x.forEach((y) => {
-        console.log('printing task - ', y.name);
-      });
+    map((searchResult) => {
+      console.log('searchResult.Tasks - ', searchResult);
+      // this.pendingResultsLength = searchResult[1];
+      return searchResult;
     })
+    // tap((printTask) => {
+    //   printTask.forEach((y) => {
+    //     console.log('Task - ', y.name);
+    //   });
+    // })
   );
 
-  taskCompleted$ = this.refresh$.pipe(
-    switchMap(() => {
+  taskCompleted$ = combineLatest([
+    this.refresh$,
+    this.completedPgnParameters$,
+  ]).pipe(
+    switchMap(async ([refresh, pgnParameters]) => {
       // this.isLoadingResult = true;
-      let completedTask = this.taskServices.getCompletedTasks(STATUS.Completed);
-      // this.isLoadingResult = false;
-      return completedTask;
+      this.completedPgnParameters = pgnParameters;
+      console.log('Pagination params - ', pgnParameters);
+      let searchResult = await this.taskServices.textBasedSearch(pgnParameters);
+      // setTimeout(() => {
+      //   this.isLoadingResult = false;
+      // }, 500);
+      return searchResult;
     }),
-    tap((x) => {
-      x.forEach((y) => {
-        console.log('printing task - ', y.name);
+    // switchMap((observableToObj) => {
+    //   return observableToObj;
+    // }),
+    tap((searchResult) => {
+      this.completedResultsLength = searchResult.length;
+      searchResult.forEach((y) => {
+        console.log('Task - ', y.name);
       });
-    })
+    }),
+    map((searchResult) => searchResult)
   );
 
   async searchClick(event: Event) {
     const searchValue = (event.target as HTMLInputElement).value;
     // this.paginationParameters.search = event.target.value;
-    this.paginationParameters.search = searchValue.trim().toLowerCase();
-    this.paginationParameters$.next(this.paginationParameters);
+    this.pendingPgnParameters.search = this.completedPgnParameters.search =
+      searchValue.trim().toLowerCase();
+    this.pendingPgnParameters$.next(this.pendingPgnParameters);
+    this.completedPgnParameters$.next(this.completedPgnParameters);
     this.paginator.firstPage();
-    console.log(this.paginationParameters);
-    console.log('search clicked');
+    console.log('search clicked', this.pendingPgnParameters);
   }
 
   updateTaskDialog(task: TaskDTO): void {

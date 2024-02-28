@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   CreateTaskDTO,
-  PaginationDTO,
   STATUS,
+  SearchResultDTO,
   TaskDTO,
   UpdateTaskDTO,
 } from '../models';
@@ -39,7 +39,9 @@ export class TaskService {
     return Tasks;
   }
 
-  public getCompletedTasks(completed: STATUS): Observable<TaskDTO[]> {
+  public async getCompletedTasks(
+    completed: STATUS
+  ): Promise<Observable<TaskDTO[]>> {
     const Tasks = this.http.get<TaskDTO[]>(
       this.BaseURL + `?status=${completed}`,
       {
@@ -81,13 +83,12 @@ export class TaskService {
     return await firstValueFrom(this.http.delete(this.BaseURL + `/${id}`));
   }
 
-  async fullTextSearchPending(
-    queryParams: PaginationDTO
-  ): Promise<[TaskDTO[], number]> {
-    console.log('Service - Text search - {0}', queryParams);
+  async textBasedSearch(queryParams: any): Promise<TaskDTO[]> {
+    console.log('Service - Text search - ', queryParams);
     const Tasks = await firstValueFrom(
-      this.http.post<[TaskDTO[], number]>(this.BaseURL, queryParams)
+      this.http.post<Promise<TaskDTO[]>>(this.BaseURL + '/search', queryParams)
     );
+    console.log('Returned from result', Tasks);
     return Tasks;
   }
 }

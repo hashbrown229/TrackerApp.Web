@@ -1,17 +1,19 @@
-<div class="Container">
-  <div id="tableTopBar" class="table-header-group">
-    <form>
-      <mat-form-field appearance="fill">
-        <mat-label>Search Task</mat-label>
-        <input
-          type="text"
-          matInput
-          (keyup)="searchClick($event)"
-          placeholder="Ex. Shopping"
-          #searchTask
-        />
-      </mat-form-field>
-    </form>
+<div class="Container overflow-y-auto py-6 px-12">
+  <div id="tableTopBar" class="table-header-row">
+    <div class="col-sm">
+      <form>
+        <mat-form-field appearance="fill">
+          <mat-label>Search Task</mat-label>
+          <input
+            type="text"
+            matInput
+            (keyup)="searchClick($event)"
+            placeholder="Ex. Shopping"
+            #searchTask
+          />
+        </mat-form-field>
+      </form>
+    </div>
     <!-- <mat-paginator
         [length]="resultsLength"
         [pageSize]="10"
@@ -33,7 +35,7 @@
     }}</mat-slide-toggle>
   </div>
 
-  <div id="pendingTaskDiv" class="py-6 px-12 mb-16">
+  <div id="pendingTaskDiv" class="py-6 mb-16">
     <div id="pendingTaskTableDiv" class="mb-6">
       <table
         mat-table
@@ -191,14 +193,15 @@
 
     <mat-paginator
       [pageSizeOptions]="[5, 10, 25, 100]"
-      [pageSize]="10 || paginationParameters.take"
-      [length]="resultsLength"
+      [pageSize]="pendingPgnParameters.take || 10"
+      [length]="pendingResultsLength"
       (page)="
-        paginationParameters$.next({
+        pendingPgnParameters$.next({
           take: $event.pageSize,
           skip: $event.pageIndex * $event.pageSize,
-          search: this.paginationParameters.search,
-          status: this.paginationParameters.status
+          search: this.pendingPgnParameters.search,
+          status: this.pendingPgnParameters.status,
+
         })
       "
       aria-label="Show items"
@@ -206,7 +209,7 @@
     </mat-paginator>
   </div>
 
-  <div id="completedTaskDiv" class="py-6 px-12">
+  <div id="completedTaskDiv" class="py-6">
     <div id="completedTaskTableDiv" class="mb-6">
       <table
         mat-table
@@ -366,14 +369,14 @@
 
     <mat-paginator
       [pageSizeOptions]="[5, 10, 25, 100]"
-      [pageSize]="10 || paginationParameters.take"
-      [length]="resultsLength"
+      [pageSize]="10 || completedPgnParameters.take"
+      [length]="completedResultsLength"
       (page)="
-        paginationParameters$.next({
+        completedPgnParameters$.next({
           take: $event.pageSize,
           skip: $event.pageIndex * $event.pageSize,
-          search: this.paginationParameters.search,
-          status: this.paginationParameters.status
+          search: this.completedPgnParameters.search,
+          status: this.completedPgnParameters.status,
         })
       "
       aria-label="Show items"
