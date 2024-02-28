@@ -1,8 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import {
+  AddTaskDialogComponent,
   CalculateDaysPipe,
   CategoryToStringPipe,
+  NavbarComponent,
   PriorityToStringPipe,
   TaskDetailComponent,
   TaskListComponent,
@@ -71,8 +73,15 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     CategoryToStringPipe,
     PriorityToStringPipe,
     CalculateDaysPipe,
+    NavbarComponent,
+    AddTaskDialogComponent,
   ],
-  exports: [TaskListComponent, TaskDetailComponent],
+  exports: [
+    TaskListComponent,
+    TaskDetailComponent,
+    NavbarComponent,
+    AddTaskDialogComponent,
+  ],
   providers: [TaskService],
 })
 export class TaskModule {}
