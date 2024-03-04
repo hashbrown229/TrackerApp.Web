@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   CreateTaskDTO,
@@ -19,9 +19,13 @@ export class TaskService {
 
   private BaseURL = 'http://localhost:5235/api/Tasks';
 
+  headers = new HttpHeaders()
+    .set('Content-Type', 'application/json')
+    .append('Access-Control-Allow-Origin', '*');
+
   public getAllTasks(): Observable<TaskDTO[]> {
     const Tasks = this.http.get<TaskDTO[]>(this.BaseURL + '?status=All', {
-      headers: { 'Access-Control-Allow-Origin': '*' },
+      headers: this.headers,
     });
     return Tasks;
   }
@@ -32,7 +36,7 @@ export class TaskService {
     const Tasks = this.http.get<TaskDTO[]>(
       this.BaseURL + `?status=${pending}`,
       {
-        headers: { 'Access-Control-Allow-Origin': '*' },
+        headers: this.headers,
       }
     );
     console.log(Tasks);
@@ -45,50 +49,63 @@ export class TaskService {
     const Tasks = this.http.get<TaskDTO[]>(
       this.BaseURL + `?status=${completed}`,
       {
-        headers: { 'Access-Control-Allow-Origin': '*' },
+        headers: this.headers,
       }
     );
-
-    console.log(Tasks);
     return Tasks;
   }
 
   public getTaskByID(id: GUID): Observable<TaskDTO> {
     const Task = this.http.get<TaskDTO>(this.BaseURL + `/${id}`, {
-      headers: { 'Access-Control-Allow-Origin': '*' },
+      headers: this.headers,
     });
     return Task;
   }
 
-  public async createTask(
-    payload: CreateTaskDTO
-  ): Promise<Observable<TaskDTO>> {
-    const Task = this.http.post<TaskDTO>(this.BaseURL, payload);
-    Task.subscribe();
-    return Task;
-  }
+  // public async createTask(
+  //   payload: CreateTaskDTO
+  // ): Promise<Observable<TaskDTO>> {
+  //   const Task = this.http.post<TaskDTO>(this.BaseURL, payload);
+  //   Task.subscribe();
+  //   return Task;
+  // }
 
-  public async updateTask(id: GUID, payload: UpdateTaskDTO): Promise<TaskDTO> {
-    const Task = this.http.put<TaskDTO>(this.BaseURL + `/${id}`, payload);
-    return await firstValueFrom(Task);
-  }
+  // public async updateTask(id: GUID, payload: UpdateTaskDTO): Promise<TaskDTO> {
+  //   const Task = firstValueFrom(
+  //     this.http.put<TaskDTO>(this.BaseURL + `/${id}`, payload)
+  //   );
+  //   return await Task;
+  // }
 
   async updateTaskStatus(id: GUID, payload: UpdateTaskStatusDTO) {
-    return await firstValueFrom(
-      this.http.put(this.BaseURL + `/${id}`, payload)
-    );
+    try {
+      const result = await firstValueFrom(
+        this.http.patch(this.BaseURL + `/Status/${id}`, payload, {
+          headers: this.headers,
+        })
+      );
+      console.log(
+        `Status chnage to be - ${payload.status} for ${id} - updated ${result}`
+      );
+      return result;
+    } catch (error) {
+      console.error('error - ', JSON.stringify(error));
+      return false;
+    }
   }
 
-  async deleteTask(id: GUID) {
-    return await firstValueFrom(this.http.delete(this.BaseURL + `/${id}`));
-  }
+  // async deleteTask(id: GUID) {
+  //   return await firstValueFrom(this.http.delete(this.BaseURL + `/${id}`));
+  // }
 
-  async textBasedSearch(queryParams: any): Promise<TaskDTO[]> {
-    console.log('Service - Text search - ', queryParams);
+  async PaginationSearch(queryParams: any): Promise<TaskDTO[]> {
+    console.log('Service - search query - ', queryParams);
     const Tasks = await firstValueFrom(
-      this.http.post<Promise<TaskDTO[]>>(this.BaseURL + '/search', queryParams)
+      this.http.post<Promise<TaskDTO[]>>(this.BaseURL, queryParams, {
+        headers: this.headers,
+      })
     );
-    console.log('Returned from result', Tasks);
+    // console.log('Returned from result', Tasks);
     return Tasks;
   }
 }
