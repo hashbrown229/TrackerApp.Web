@@ -1,0 +1,80 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+mat-icon {
+  vertical-align: middle;
+}
+
+mat-toolbar {
+  display: flex;
+}
+
+.custom-mat-icon {
+  font-weight: 900;
+}
+
+.customeText {
+  padding-left: 0.5em;
+  font-weight: bold;
+}
+
+.add-task-custom-title {
+  @extend .customeText;
+  margin-bottom: 0px !important;
+}
+
+/* // CSS for form component */
+
+.mat-form-field {
+  width: 100%;
+  margin-left: 8px;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+form > * {
+  margin: 5px 0;
+}
+
+.mat-radio-button {
+  margin: 0 12px;
+}
+
+/* // Input Spacing */
+/* .input-bottom-spacing-2 {
+  margin-bottom: 2em !important;
+} */
+
+.input-bottom-spacing-1 {
+  margin-bottom: 1em !important;
+}
+
+/* //Radio Button */
+.custom-radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+  align-items: flex-start;
+}
+
+.custom-radio-button {
+  margin: 5px;
+}
+
+.container {
+  display: flex; /* or inline-flex */
+  vertical-align: middle !important;
+  margin-bottom: 30px;
+  align-items: center;
+}
+
+.custom-cancle-button {
+  height: 35px !important;
+}
+
+right-corner {
+  text-align: end;
+}

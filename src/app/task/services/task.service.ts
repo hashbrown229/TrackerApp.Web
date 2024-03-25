@@ -62,20 +62,20 @@ export class TaskService {
     return Task;
   }
 
-  // public async createTask(
-  //   payload: CreateTaskDTO
-  // ): Promise<Observable<TaskDTO>> {
-  //   const Task = this.http.post<TaskDTO>(this.BaseURL, payload);
-  //   Task.subscribe();
-  //   return Task;
-  // }
+  public async createTask(
+    payload: CreateTaskDTO
+  ): Promise<Observable<TaskDTO>> {
+    const Task = this.http.post<TaskDTO>(this.BaseURL, payload);
+    Task.subscribe();
+    return Task;
+  }
 
-  // public async updateTask(id: GUID, payload: UpdateTaskDTO): Promise<TaskDTO> {
-  //   const Task = firstValueFrom(
-  //     this.http.put<TaskDTO>(this.BaseURL + `/${id}`, payload)
-  //   );
-  //   return await Task;
-  // }
+  public async updateTask(id: GUID, payload: UpdateTaskDTO): Promise<TaskDTO> {
+    const Task = firstValueFrom(
+      this.http.put<TaskDTO>(this.BaseURL + `/${id}`, payload)
+    );
+    return await Task;
+  }
 
   async updateTaskStatus(id: GUID, payload: UpdateTaskStatusDTO) {
     try {

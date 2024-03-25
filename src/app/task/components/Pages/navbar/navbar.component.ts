@@ -15,8 +15,8 @@ export class NavbarComponent {
 
   openDialog(): void {
     const dialogRef = this.dialog.open(AddTaskDialogComponent, {
-      width: '350px',
-      height: '350px',
+      width: '450px',
+      height: '650px',
     });
 
     dialogRef.afterClosed().subscribe((result) => {

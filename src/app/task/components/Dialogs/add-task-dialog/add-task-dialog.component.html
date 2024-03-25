@@ -1,1 +1,108 @@
-<p>add-task-dialog works!</p>
+<div class="container">
+  <!-- <span id="FirstDiv" class="example-spacer"></span>
+
+  <div id="CenterDiv">
+    <mat-icon>add_task</mat-icon>
+    <h2 mat-dialog-title class="add-task-custom-title">{{ dialog_title }}</h2>
+  </div>
+
+  <button
+    id="LastDiv"
+    mat-mini-fab
+    mat-dialog-close
+    color="basic"
+    aria-label="Example icon button with a plus one icon"
+  >
+    <mat-icon>cancel</mat-icon>
+  </button> -->
+  <div class="flex justify-between">
+    <span id="FirstDiv" class="flex-1"></span>
+
+    <div id="CenterDiv" class="flex items-center">
+      <mat-icon>add_task</mat-icon>
+      <h2 mat-dialog-title class="add-task-custom-title">{{ dialog_title }}</h2>
+    </div>
+
+    <div id="LastDiv" class="flex items-center">
+      <button mat-mini-fab mat-dialog-close color="basic" aria-label="Cancel">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div mat-dialog-content>
+  <form [formGroup]="addForm">
+    <mat-form-field appearance="fill" class="w-full" floatLabel="auto">
+      <mat-label>Task Name</mat-label>
+      <input
+        matInput
+        placeholder="Provide a meaningful title"
+        required
+        formControlName="name"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="w-full" floatLabel="auto">
+      <mat-label>Task Description</mat-label>
+      <textarea
+        matInput
+        placeholder="Write short task detail."
+        formControlName="description"
+      ></textarea>
+    </mat-form-field>
+
+    <div class="pb-4">
+      <mat-form-field class="w-full" appearance="fill">
+        <mat-label>Due Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="dueDate" />
+        <mat-hint>MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <div class="flex gap-3">
+      <mat-form-field class="w-full">
+        <mat-label>Priority Level</mat-label>
+        <mat-select required formControlName="priority">
+          <mat-option *ngFor="let priority of priorities" [value]="priority">
+            {{ priority }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Task Category</mat-label>
+        <mat-select required formControlName="category">
+          <mat-option *ngFor="let category of categories" [value]="category">
+            {{ category }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <mat-checkbox
+      matTooltip="Mark as already completed!"
+      formControlName="status"
+      [checked]="isCompleted"
+    >
+      Completed!
+    </mat-checkbox>
+
+    <mat-dialog-actions class="content-between pt-2">
+      <button mat-raised-button color="warn" type="reset">Reset</button>
+      <span class="example-spacer"></span>
+      <button
+        mat-raised-button
+        color="primary"
+        cdkFocusInitial
+        type="submit"
+        [disabled]="addForm.invalid"
+        (click)="createNewTodo()"
+      >
+        Create
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>
